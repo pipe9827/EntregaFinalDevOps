@@ -2,7 +2,7 @@ pipeline {
     agent any
     options {disableConcurrentBuilds()}
     environment {
-        GOOGLE_PROJECT_ID = "ilab3-kubernetes-devops" 
+        GOOGLE_PROJECT_ID = "lab3-kubernetes-devops" 
         GOOGLE_PROJECT_NAME = "lab3-kubernetes-devops"
         GOOGLE_APPLICATION_CREDENTIALS = credentials('service-account-visitor')
         GOOGLE_CLOUD_KEYFILE_JSON = credentials('service-account-visitor')
