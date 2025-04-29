@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: gatewayserver
-          image: jbelzeboss97/gatewayserver:latest
+          image: maikid3v/gatewayserver:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8072

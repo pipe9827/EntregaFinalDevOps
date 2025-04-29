@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: configserver
-          image: jbelzeboss97/configserver:latest
+          image: maikid3v/configserver:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8071

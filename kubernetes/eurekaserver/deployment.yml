@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: eurekaserver
-          image: jbelzeboss97/eurekaserver:latest
+          image: maikid3v/eurekaserver:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8070

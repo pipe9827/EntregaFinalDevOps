@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: accounts
-          image: jbelzeboss97/accounts-service:latest
+          image: maikid3v/accounts:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
