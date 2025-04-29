@@ -20,7 +20,7 @@ pipeline {
                     def dockerImage = "maikid3v/cards:${DOCKER_IMAGE_VERSION}"
                     sh """
                     echo ">> Construyendo imagen ${dockerImage}"
-                    docker build --platform linux/amd64 -t ${dockerImage} cards/.
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${dockerImage} cards/.
                     """
                 }
             }
