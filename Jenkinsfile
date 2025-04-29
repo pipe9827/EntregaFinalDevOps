@@ -19,14 +19,17 @@ pipeline {
         
         stage("Google Cloud connection -----------------"){
             steps {
-                
-                sh("gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}")
-                sh 'gcloud config set project ${GOOGLE_PROJECT_ID}'
-                sh '''
-                  gcloud pubsub topics list
-                  gcloud projects list
-                  gcloud compute networks list
-                '''
+
+                withEnv(['GCLOUD_PATH=/Users/maiki/Downloads/google-cloud-sdk/bin']) {
+                    sh '$GCLOUD_PATH/gcloud --version'
+                    sh("$GCLOUD_PATH/gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}")
+                    sh '$GCLOUD_PATH/gcloud config set project ${GOOGLE_PROJECT_ID}'
+                    sh '''
+                    $GCLOUD_PATH/gcloud pubsub topics list
+                    $GCLOUD_PATH/gcloud projects list
+                    $GCLOUD_PATH/gcloud compute networks list
+                    '''
+                }
             } //steps
         }  //stage
     
