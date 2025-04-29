@@ -1,47 +1,35 @@
 pipeline {
     agent any
-    
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        
-        stage('Build') {
-            steps {
-                echo 'Building the application...'
-                // Add build commands here, for example:
-                // sh 'mvn clean package'
-                // or
-                // sh 'npm install'
-            }
-        }
-        
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                // Add test commands here, for example:
-                // sh 'mvn test'
-                // or
-                // sh 'npm test'
-            }
-        }
-        
-        stage('Deploy') {
-            steps {
-                echo 'Deploying the application...'
-                // Add deployment commands here
-            }
-        }
+    options {disableConcurrentBuilds()}
+    environment {
+        GOOGLE_PROJECT_ID = "ilab3-kubernetes-devops" 
+        GOOGLE_PROJECT_NAME = "lab3-kubernetes-devops"
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('service-account-visitor')
+        GOOGLE_CLOUD_KEYFILE_JSON = credentials('service-account-visitor')
     }
     
-    post {
-        success {
-            echo 'Pipeline executed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
-    }
-}
+    stages{
+        stage('clean workspaces -----------') { 
+            steps {
+              cleanWs()
+              sh 'env'
+            } //steps
+        }  //stage
+
+        
+        stage("Google Cloud connection -----------------"){
+            steps {
+                
+                sh("gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}")
+                sh 'gcloud config set project ${GOOGLE_PROJECT_ID}'
+                sh '''
+                  gcloud pubsub topics list
+                  gcloud projects list
+                  gcloud compute networks list
+                '''
+            } //steps
+        }  //stage
+    
+      
+   }  // stages
+} //pipeline
