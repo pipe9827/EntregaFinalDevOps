@@ -2,7 +2,7 @@ pipeline {
     agent any
     options {disableConcurrentBuilds()}
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('maikid3v-dockerhub')
+        DOCKERHUB_CREDENTIALS = credentials('maikid3v-dokerhub')
         GOOGLE_PROJECT_ID = "lab3-kubernetes-devops" 
         GOOGLE_PROJECT_NAME = "lab3-kubernetes-devops"
         GOOGLE_APPLICATION_CREDENTIALS = credentials('service-account-visitor')
