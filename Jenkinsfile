@@ -22,6 +22,53 @@ pipeline {
             } //steps
         }  //stage
 
+        stage('Build Microservices') {
+            parallel {
+                stage('Config Server') {
+                    steps {
+                        dir('configserver') {
+                            sh 'mvn clean package -DskipTests'
+                        }
+                    }
+                }
+                stage('Eureka Server') {
+                    steps {
+                        dir('eurekaserver') {
+                            sh 'mvn clean package -DskipTests'
+                        }
+                    }
+                }
+                stage('Gateway Server') {
+                    steps {
+                        dir('gatewayserver') {
+                            sh 'mvn clean package -DskipTests'
+                        }
+                    }
+                }
+                stage('Accounts') {
+                    steps {
+                        dir('accounts') {
+                            sh 'mvn clean package -DskipTests'
+                        }
+                    }
+                }
+                stage('Cards') {
+                    steps {
+                        dir('cards') {
+                            sh 'mvn clean package -DskipTests'
+                        }
+                    }
+                }
+                stage('Loans') {
+                    steps {
+                        dir('loans') {
+                            sh 'mvn clean package -DskipTests'
+                        }
+                    }
+                }
+            }
+        }
+
         
         stage("Google Cloud connection -----------------"){
             steps {
