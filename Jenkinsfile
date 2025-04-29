@@ -9,7 +9,6 @@ pipeline {
         GOOGLE_CLOUD_KEYFILE_JSON = credentials('service-account-visitor')
         LOCATION = 'us-central1'
         DOCKER_IMAGE_VERSION = "${BUILD_NUMBER}"
-
     }
     
     stages{
@@ -38,71 +37,67 @@ pipeline {
         }  //stage
     
         stage('Build and Push Docker Images') {
-    steps {
-        script {
-            def safeDockerPush = { imageName ->
-                int maxRetries = 3
-                int retryDelaySeconds = 10
-                int attempt = 1
+            steps {
+                script {
+                    def safeDockerPush = { imageName ->
+                        int maxRetries = 3
+                        int retryDelaySeconds = 10
+                        int attempt = 1
 
-                while (attempt <= maxRetries) {
-                    echo " Attempt ${attempt} to push ${imageName}"
-                    def result = sh(script: "docker push ${imageName}", returnStatus: true)
-                    
-                    if (result == 0) {
-                        echo "Image ${imageName} pushed successfully on attempt ${attempt}"
-                        break
-                    } else {
-                        echo "Failed to push ${imageName} (attempt ${attempt})"
-                        if (attempt == maxRetries) {
-                            error "Could not push ${imageName} after ${maxRetries} attempts"
-                        }
-                        sleep(time: retryDelaySeconds, unit: "SECONDS")
-                        attempt++
-                    }
-                }
-            }
-
-            withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-
-                def services = [
-                    'configserver': 'configserver',
-                    'eurekaserver': 'eurekaserver',
-                    'gatewayserver': 'gatewayserver',
-                    'accounts': 'accounts-service',
-                    'cards': 'cards-service',
-                    'loans': 'loans-service'
-                ]
-
-                parallel services.collectEntries { dirName, dockerName ->
-                    ["${dirName}" : {
-                        dir(dirName) {
-                            def imageName = "jbelzeboss97/${dockerName}:${DOCKER_IMAGE_VERSION}"
-
-                            sh """
-                                echo ">> Building image ${imageName}"
-                                docker build --platform linux/amd64 -t ${imageName} .
-                            """
-
-                            def exists = sh(
-                                script: "curl --silent -f -lSL https://hub.docker.com/v2/repositories/jbelzeboss97/${dockerName}/tags/${DOCKER_IMAGE_VERSION}/ > /dev/null && echo true || echo false",
-                                returnStdout: true
-                            ).trim()
-
-                            if (exists == "false") {
-                                safeDockerPush(imageName)
+                        while (attempt <= maxRetries) {
+                            echo " Attempt ${attempt} to push ${imageName}"
+                            def result = sh(script: "docker push ${imageName}", returnStatus: true)
+                            
+                            if (result == 0) {
+                                echo "Image ${imageName} pushed successfully on attempt ${attempt}"
+                                break
                             } else {
-                                echo ">> Image ${imageName} already exists, skipping push"
+                                echo "Failed to push ${imageName} (attempt ${attempt})"
+                                if (attempt == maxRetries) {
+                                    error "Could not push ${imageName} after ${maxRetries} attempts"
+                                }
+                                sleep(time: retryDelaySeconds, unit: "SECONDS")
+                                attempt++
                             }
                         }
-                    }]
-                }
+                    }
 
-                sh 'docker logout'
+                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+
+                    def services = [
+                        'configserver': 'configserver',
+                        'eurekaserver': 'eurekaserver',
+                        'gatewayserver': 'gatewayserver',
+                        'accounts': 'accounts',
+                        'cards': 'cards',
+                        'loans': 'loans'
+                    ]
+
+                    parallel services.collectEntries { dirName, dockerName ->
+                        ["${dirName}" : {
+                            dir(dirName) {
+                                def imageName = "maikid3v/${dockerName}:${DOCKER_IMAGE_VERSION}"
+                                def exists = sh(
+                                    script: "curl --silent -f -lSL https://hub.docker.com/repositories/maikid3v/${dockerName}/tags/${DOCKER_IMAGE_VERSION}/ > /dev/null && echo true || echo false",
+                                    returnStdout: true
+                                ).trim()
+
+                                if (exists == "false") {
+                                    sh """
+                                    echo ">> Building image ${imageName}"
+                                    docker build --platform linux/amd64 -t ${imageName} .
+                                    """
+                                    safeDockerPush(imageName)
+                                } else {
+                                    echo ">> Image ${imageName} already exists, skipping push"
+                                }
+                            }
+                        }]
+                    }
+
+                    sh 'docker logout'
+                }
             }
         }
-    }
-}
    }  // stages
 } //pipeline
