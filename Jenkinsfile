@@ -11,6 +11,12 @@ pipeline {
         DOCKER_IMAGE_VERSION = "${BUILD_NUMBER}"
         DOCKER_PATH="/usr/local/bin"
         GCLOUD_PATH="/Users/maiki/Downloads/google-cloud-sdk/bin"
+        DOCKER_IMAGE_CONFIGSERVER = "maikid3v/configserver:${DOCKER_IMAGE_VERSION}"
+        DOCKER_IMAGE_EUREKASERVER = "maikid3v/eurekaserver:${DOCKER_IMAGE_VERSION}"
+        DOCKER_IMAGE_ACCOUNTS = "maikid3v/accounts:${DOCKER_IMAGE_VERSION}"
+        DOCKER_IMAGE_CARDS = "maikid3v/cards:${DOCKER_IMAGE_VERSION}"
+        DOCKER_IMAGE_LOANS = "maikid3v/loans:${DOCKER_IMAGE_VERSION}"
+        DOCKER_IMAGE_GATEWAYSERVER = "maikid3v/gatewayserver:${DOCKER_IMAGE_VERSION}"
     }
     
     stages {
@@ -28,10 +34,20 @@ pipeline {
         stage('Build ConfigServer') {
             steps {
                 script {
-                    def dockerImage = "maikid3v/configserver:${DOCKER_IMAGE_VERSION}"
                     sh """
-                    echo ">> Construyendo imagen ${dockerImage}"
-                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${dockerImage} configserver/.
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_CONFIGSERVER}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_CONFIGSERVER} configserver/.
+                    """
+                }
+            }
+        }
+
+        stage('Push ConfigServer') {
+            steps {
+                script {
+                    sh """
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_CONFIGSERVER}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_CONFIGSERVER}
                     """
                 }
             }
@@ -40,10 +56,21 @@ pipeline {
         stage('Build EurekaServer') {
             steps {
                 script {
-                    def dockerImage = "maikid3v/eurekaserver:${DOCKER_IMAGE_VERSION}"
                     sh """
-                    echo ">> Construyendo imagen ${dockerImage}"
-                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${dockerImage} eurekaserver/.
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_EUREKASERVER}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_EUREKASERVER} eurekaserver/.
+                    """
+                }
+            }
+        }
+
+
+        stage('Push EurekaServer') {
+            steps {
+                script {
+                    sh """
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_EUREKASERVER}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_EUREKASERVER}
                     """
                 }
             }
@@ -52,10 +79,20 @@ pipeline {
         stage('Build Accounts') {
             steps {
                 script {
-                    def dockerImage = "maikid3v/accounts:${DOCKER_IMAGE_VERSION}"
                     sh """
-                    echo ">> Construyendo imagen ${dockerImage}"
-                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${dockerImage} accounts/.
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_ACCOUNTS}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_ACCOUNTS} accounts/.
+                    """
+                }
+            }
+        }
+
+        stage('Push Accounts') {
+            steps {
+                script {
+                    sh """
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_ACCOUNTS}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_ACCOUNTS}
                     """
                 }
             }
@@ -64,10 +101,20 @@ pipeline {
         stage('Build Cards') {
             steps {
                 script {
-                    def dockerImage = "maikid3v/cards:${DOCKER_IMAGE_VERSION}"
                     sh """
-                    echo ">> Construyendo imagen ${dockerImage}"
-                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${dockerImage} cards/.
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_CARDS}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_CARDS} cards/.
+                    """
+                }
+            }
+        }
+
+        stage('Push Cards') {
+            steps {
+                script {
+                    sh """
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_CARDS}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_CARDS}
                     """
                 }
             }
@@ -76,10 +123,42 @@ pipeline {
         stage('Build Loans') {
             steps {
                 script {
-                    def dockerImage = "maikid3v/loans:${DOCKER_IMAGE_VERSION}"
                     sh """
-                    echo ">> Construyendo imagen ${dockerImage}"
-                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${dockerImage} loans/.
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_LOANS}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_LOANS} loans/.
+                    """
+                }
+            }
+        }
+
+        stage('Push Loans') {
+            steps {
+                script {
+                    sh """
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_LOANS}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_LOANS}
+                    """
+                }
+            }
+        }
+
+        stage('Build GatewayServer') {
+            steps {
+                script {
+                    sh """
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_GATEWAYSERVER}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_GATEWAYSERVER} gatewayserver/.
+                    """
+                }
+            }
+        }
+
+        stage('Push GatewayServer') {
+            steps {
+                script {
+                    sh """
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_GATEWAYSERVER}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_GATEWAYSERVER}
                     """
                 }
             }
