@@ -13,16 +13,7 @@ pipeline {
         GCLOUD_PATH="/Users/maiki/Downloads/google-cloud-sdk/bin"
     }
     
-    stages{
-        
-        stage('clean workspaces -----------') { 
-            steps {
-              cleanWs()
-              sh 'env'
-            } //steps
-        }  //stage
-
-
+    stages {
         stage('Checkout') {
             steps {
                 checkout scm
@@ -76,20 +67,6 @@ pipeline {
             }
         }
 
-        
-        stage("Google Cloud connection -----------------"){
-            steps {
-
-                sh '$GCLOUD_PATH/gcloud --version'
-                sh("$GCLOUD_PATH/gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}")
-                sh '$GCLOUD_PATH/gcloud config set project ${GOOGLE_PROJECT_ID}'
-                sh '''
-                $GCLOUD_PATH/gcloud pubsub topics list
-                $GCLOUD_PATH/gcloud projects list
-                '''
-            } //steps
-        }  //stage
-    
         stage('Build and Push Docker Images') {
             steps {
                 script {
@@ -99,16 +76,16 @@ pipeline {
                         int attempt = 1
 
                         while (attempt <= maxRetries) {
-                            echo " Attempt ${attempt} to push ${imageName}"
-                            def result = sh(script: "$DOCKER_PATH/docker push ${imageName}", returnStatus: true)
+                            echo "🔄 Intento ${attempt} para subir ${imageName}"
+                            def result = sh(script: "docker push ${imageName}", returnStatus: true)
                             
                             if (result == 0) {
-                                echo "Image ${imageName} pushed successfully on attempt ${attempt}"
+                                echo "✅ Imagen ${imageName} subida correctamente en el intento ${attempt}"
                                 break
                             } else {
-                                echo "Failed to push ${imageName} (attempt ${attempt})"
+                                echo "⚠️ Falló el push de ${imageName} (intento ${attempt})"
                                 if (attempt == maxRetries) {
-                                    error "Could not push ${imageName} after ${maxRetries} attempts"
+                                    error "❌ No se pudo subir ${imageName} después de ${maxRetries} intentos"
                                 }
                                 sleep(time: retryDelaySeconds, unit: "SECONDS")
                                 attempt++
@@ -116,43 +93,93 @@ pipeline {
                         }
                     }
 
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | $DOCKER_PATH/docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
 
+                        def services = [
+                            'configserver': 'configserver',
+                            'eurekaserver': 'eurekaserver',
+                            'gatewayserver': 'gatewayserver',
+                            'accounts': 'accounts-service',
+                            'cards': 'cards-service',
+                            'loans': 'loans-service'
+                        ]
+
+                        parallel services.collectEntries { dirName, dockerName ->
+                            ["${dirName}" : {
+                                dir(dirName) {
+                                    def imageName = "jbelzeboss97/${dockerName}:${DOCKER_IMAGE_VERSION}"
+
+                                    sh """
+                                        echo ">> Construyendo imagen ${imageName}"
+                                        docker build --platform linux/amd64 -t ${imageName} .
+                                    """
+
+                                    def exists = sh(
+                                        script: "curl --silent -f -lSL https://hub.docker.com/v2/repositories/jbelzeboss97/${dockerName}/tags/${DOCKER_IMAGE_VERSION}/ > /dev/null && echo true || echo false",
+                                        returnStdout: true
+                                    ).trim()
+
+                                    if (exists == "false") {
+                                        safeDockerPush(imageName)
+                                    } else {
+                                        echo ">> La imagen ${imageName} ya existe, omitiendo push"
+                                    }
+                                }
+                            }]
+                        }
+
+                        sh 'docker logout'
+                    }
+                }
+            }
+        }
+
+
+        stage('Update Kubernetes Manifests') {
+            steps {
+                script {
                     def services = [
                         'configserver': 'configserver',
                         'eurekaserver': 'eurekaserver',
                         'gatewayserver': 'gatewayserver',
-                        'accounts': 'accounts',
-                        'cards': 'cards',
-                        'loans': 'loans'
+                        'accounts': 'accounts-service',
+                        'cards': 'cards-service',
+                        'loans': 'loans-service'
                     ]
-
-                    parallel services.collectEntries { dirName, dockerName ->
-                        ["${dirName}" : {
-                            dir(dirName) {
-                                sh "pwd"
-                                def imageName = "maikid3v/${dockerName}:${DOCKER_IMAGE_VERSION}"
-                                def exists = sh(
-                                    script: "curl --silent -f -lSL https://hub.docker.com/repositories/maikid3v/${dockerName}/tags/${DOCKER_IMAGE_VERSION}/ > /dev/null && echo true || echo false",
-                                    returnStdout: true
-                                ).trim()
-
-                                if (exists == "false") {
-                                    sh """
-                                    echo ">> Building image ${imageName}"
-                                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${imageName} /.
-                                    """
-                                    safeDockerPush(imageName)
-                                } else {
-                                    echo ">> Image ${imageName} already exists, skipping push"
-                                }
-                            }
-                        }]
+                    services.each { dirName, dockerName ->
+                        sh """
+                            sed -i 's|jbelzeboss97/${dockerName}:[^ ]*|jbelzeboss97/${dockerName}:${DOCKER_IMAGE_VERSION}|' k8s/${dirName}/deployment.yaml
+                        """
                     }
-
-                    sh '$DOCKER_PATH/docker logout'
                 }
             }
         }
-   }  // stages
-} //pipeline
+
+        stage('Deploy to GKE') {
+            steps {
+                withCredentials([file(credentialsId: 'gcp-credentials', variable: 'GCP_KEY')]) {
+                    script {
+                        sh '''
+                            gcloud auth activate-service-account --key-file=$GCP_KEY
+                            gcloud container clusters get-credentials $CLUSTER_NAME --zone $LOCATION --project $PROJECT_ID
+
+                            kubectl apply -f k8s/configmap.yaml
+
+                            for service in configserver eurekaserver gatewayserver accounts loans cards; do
+                                kubectl apply -f k8s/$service/deployment.yaml
+                                kubectl apply -f k8s/$service/service.yaml
+                            done
+                        '''
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
