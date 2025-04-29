@@ -5,6 +5,7 @@ networks:
 services:
   configserver:
     container_name: configserver
+    platform: linux/amd64
     build: configserver/.
     expose:
       - 8071
@@ -21,6 +22,7 @@ services:
 
   eurekaserver:
     container_name: eurekaserver
+    platform: linux/amd64
     image: "pipe9827/eureka:v1"
     environment:
       SPRING_PROFILES_ACTIVE: dev
@@ -38,6 +40,7 @@ services:
   loans:
     container_name: loans
     image: "pipe9827/loans:v1"
+    platform: linux/amd64
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
@@ -54,6 +57,7 @@ services:
 
   cards:
     container_name: cards
+    platform: linux/amd64
     image: "maikid3v/cards:lab2"
     environment:
       SPRING_PROFILES_ACTIVE: dev
@@ -71,6 +75,7 @@ services:
 
   accounts:
     container_name: accounts
+    platform: linux/amd64
     image: "maikid3v/accounts:lab2"
     environment:
       SPRING_PROFILES_ACTIVE: dev
@@ -88,6 +93,7 @@ services:
 
   gatewayserver:
     container_name: gatewayserver
+    platform: linux/amd64
     image: "maikid3v/gateway-server:lab2"
     environment:
       SPRING_PROFILES_ACTIVE: dev
