@@ -85,7 +85,7 @@ pipeline {
                                 if (exists == "false") {
                                     sh """
                                     echo ">> Building image ${imageName}"
-                                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${imageName} .
+                                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${imageName} ${dirName}/.
                                     """
                                     safeDockerPush(imageName)
                                 } else {
