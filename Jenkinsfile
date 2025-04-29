@@ -8,6 +8,7 @@ pipeline {
         GOOGLE_PROJECT_ID = "lab3-kubernetes-devops" 
         GOOGLE_PROJECT_NAME = "lab3-kubernetes-devops"
         LOCATION = 'us-central1'
+        CLUSTER_NAME = 'autopilot-cluster-1'
         DOCKER_IMAGE_VERSION = "${BUILD_NUMBER}"
         DOCKER_PATH="/usr/local/bin"
         GCLOUD_PATH="/Users/maiki/Downloads/google-cloud-sdk/bin"
@@ -160,6 +161,65 @@ pipeline {
                     echo ">> Subiendo imagen ${DOCKER_IMAGE_GATEWAYSERVER}"
                     $DOCKER_PATH/docker push ${DOCKER_IMAGE_GATEWAYSERVER}
                     """
+                }
+            }
+        }
+
+        stage('Update Kubernetes Manifests') {
+            steps {
+                script {
+                    echo ">> Actualizando los manifiestos de Kubernetes"
+                    sh """
+                    sed -i 's|maikid3v/${DOCKER_IMAGE_CONFIGSERVER}:[^ ]*|maikid3v/${DOCKER_IMAGE_CONFIGSERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/configserver/deployment.yml
+                    sed -i 's|maikid3v/${DOCKER_IMAGE_EUREKASERVER}:[^ ]*|maikid3v/${DOCKER_IMAGE_EUREKASERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/eurekaserver/deployment.yml
+                    sed -i 's|maikid3v/${DOCKER_IMAGE_ACCOUNTS}:[^ ]*|maikid3v/${DOCKER_IMAGE_ACCOUNTS}:${DOCKER_IMAGE_VERSION}|' kubernetes/accounts/deployment.yml
+                    sed -i 's|maikid3v/${DOCKER_IMAGE_CARDS}:[^ ]*|maikid3v/${DOCKER_IMAGE_CARDS}:${DOCKER_IMAGE_VERSION}|' kubernetes/cards/deployment.yml
+                    sed -i 's|maikid3v/${DOCKER_IMAGE_LOANS}:[^ ]*|maikid3v/${DOCKER_IMAGE_LOANS}:${DOCKER_IMAGE_VERSION}|' kubernetes/loans/deployment.yml
+                    sed -i 's|maikid3v/${DOCKER_IMAGE_GATEWAYSERVER}:[^ ]*|maikid3v/${DOCKER_IMAGE_GATEWAYSERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/gatewayserver/deployment.yml
+                    """
+                }
+            }
+        }
+
+        stage('Run gcloud') {
+            steps {
+                sh("$GCLOUD_PATH/gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}")
+                sh '$GCLOUD_PATH/gcloud config set project ${GOOGLE_PROJECT_ID}'
+                sh '''
+                  $GCLOUD_PATH/gcloud pubsub topics list
+                  $GCLOUD_PATH/gcloud projects list
+                  $GCLOUD_PATH/gcloud compute networks list
+                '''
+            }
+        }
+
+        stage('Deploy to GKE') {
+            steps {
+                script {
+                    sh '''
+                    gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                    gcloud container clusters get-credentials $CLUSTER_NAME --zone $LOCATION --project $PROJECT_ID
+
+                    kubectl apply -f kubernetes/configmap.yml
+
+                    kubectl apply -f configserver/deployment.yml
+                    kubectl apply -f configserver/service.yml
+
+                    kubectl apply -f eurekaserver/deployment.yml
+                    kubectl apply -f eurekaserver/service.yml
+
+                    kubectl apply -f gatewayserver/deployment.yml
+                    kubectl apply -f gatewayserver/service.yml
+
+                    kubectl apply -f accounts/deployment.yml
+                    kubectl apply -f accounts/service.yml
+
+                    kubectl apply -f loans/deployment.yml
+                    kubectl apply -f loans/service.yml
+
+                    kubectl apply -f cards/deployment.yml
+                    kubectl apply -f cards/service.yml
+                    '''
                 }
             }
         }
