@@ -19,7 +19,7 @@ pipeline {
                 script {
                     echo ">> Iniciando sesión en DockerHub"
                     sh """
-                    $DOCKER_PATH/docker login -u ${DOCKERHUB_CREDENTIALS.username} -p ${DOCKERHUB_CREDENTIALS.password}
+                    $DOCKER_PATH/docker login -u ${DOCKERHUB_CREDENTIALS_USR} -p ${DOCKERHUB_CREDENTIALS_PSW}
                     """
                 }
             }
