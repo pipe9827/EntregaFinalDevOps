@@ -9,6 +9,8 @@ pipeline {
         GOOGLE_CLOUD_KEYFILE_JSON = credentials('service-account-visitor')
         LOCATION = 'us-central1'
         DOCKER_IMAGE_VERSION = "${BUILD_NUMBER}"
+        DOCKER_PATH="/usr/local/bin"
+        GCLOUD_PATH="/Users/maiki/Downloads/google-cloud-sdk/bin"
     }
     
     stages{
@@ -24,15 +26,13 @@ pipeline {
         stage("Google Cloud connection -----------------"){
             steps {
 
-                withEnv(['GCLOUD_PATH=/Users/maiki/Downloads/google-cloud-sdk/bin']) {
-                    sh '$GCLOUD_PATH/gcloud --version'
-                    sh("$GCLOUD_PATH/gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}")
-                    sh '$GCLOUD_PATH/gcloud config set project ${GOOGLE_PROJECT_ID}'
-                    sh '''
-                    $GCLOUD_PATH/gcloud pubsub topics list
-                    $GCLOUD_PATH/gcloud projects list
-                    '''
-                }
+                sh '$GCLOUD_PATH/gcloud --version'
+                sh("$GCLOUD_PATH/gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}")
+                sh '$GCLOUD_PATH/gcloud config set project ${GOOGLE_PROJECT_ID}'
+                sh '''
+                $GCLOUD_PATH/gcloud pubsub topics list
+                $GCLOUD_PATH/gcloud projects list
+                '''
             } //steps
         }  //stage
     
@@ -46,7 +46,7 @@ pipeline {
 
                         while (attempt <= maxRetries) {
                             echo " Attempt ${attempt} to push ${imageName}"
-                            def result = sh(script: "docker push ${imageName}", returnStatus: true)
+                            def result = sh(script: "$DOCKER_PATH/docker push ${imageName}", returnStatus: true)
                             
                             if (result == 0) {
                                 echo "Image ${imageName} pushed successfully on attempt ${attempt}"
@@ -62,7 +62,7 @@ pipeline {
                         }
                     }
 
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | $DOCKER_PATH/docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
 
                     def services = [
                         'configserver': 'configserver',
@@ -85,7 +85,7 @@ pipeline {
                                 if (exists == "false") {
                                     sh """
                                     echo ">> Building image ${imageName}"
-                                    docker build --platform linux/amd64 -t ${imageName} .
+                                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${imageName} .
                                     """
                                     safeDockerPush(imageName)
                                 } else {
@@ -95,7 +95,7 @@ pipeline {
                         }]
                     }
 
-                    sh 'docker logout'
+                    sh '$DOCKER_PATH/docker logout'
                 }
             }
         }
