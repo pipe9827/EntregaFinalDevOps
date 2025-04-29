@@ -170,12 +170,12 @@ pipeline {
                 script {
                     echo ">> Actualizando los manifiestos de Kubernetes"
                     sh """
-                    sed -i 's|${DOCKER_IMAGE_CONFIGSERVER}:[^ ]*|${DOCKER_IMAGE_CONFIGSERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/configserver/deployment.yml
-                    sed -i 's|${DOCKER_IMAGE_EUREKASERVER}:[^ ]*|${DOCKER_IMAGE_EUREKASERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/eurekaserver/deployment.yml
-                    sed -i 's|${DOCKER_IMAGE_ACCOUNTS}:[^ ]*|${DOCKER_IMAGE_ACCOUNTS}:${DOCKER_IMAGE_VERSION}|' kubernetes/accounts/deployment.yml
-                    sed -i 's|${DOCKER_IMAGE_CARDS}:[^ ]*|${DOCKER_IMAGE_CARDS}:${DOCKER_IMAGE_VERSION}|' kubernetes/cards/deployment.yml
-                    sed -i 's|${DOCKER_IMAGE_LOANS}:[^ ]*|${DOCKER_IMAGE_LOANS}:${DOCKER_IMAGE_VERSION}|' kubernetes/loans/deployment.yml
-                    sed -i 's|${DOCKER_IMAGE_GATEWAYSERVER}:[^ ]*|${DOCKER_IMAGE_GATEWAYSERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/gatewayserver/deployment.yml
+                    sed -i '' 's|${DOCKER_IMAGE_CONFIGSERVER}:[^ ]*|${DOCKER_IMAGE_CONFIGSERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/configserver/deployment.yml
+                    sed -i '' 's|${DOCKER_IMAGE_EUREKASERVER}:[^ ]*|${DOCKER_IMAGE_EUREKASERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/eurekaserver/deployment.yml
+                    sed -i '' 's|${DOCKER_IMAGE_ACCOUNTS}:[^ ]*|${DOCKER_IMAGE_ACCOUNTS}:${DOCKER_IMAGE_VERSION}|' kubernetes/accounts/deployment.yml
+                    sed -i '' 's|${DOCKER_IMAGE_CARDS}:[^ ]*|${DOCKER_IMAGE_CARDS}:${DOCKER_IMAGE_VERSION}|' kubernetes/cards/deployment.yml
+                    sed -i '' 's|${DOCKER_IMAGE_LOANS}:[^ ]*|${DOCKER_IMAGE_LOANS}:${DOCKER_IMAGE_VERSION}|' kubernetes/loans/deployment.yml
+                    sed -i '' 's|${DOCKER_IMAGE_GATEWAYSERVER}:[^ ]*|${DOCKER_IMAGE_GATEWAYSERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/gatewayserver/deployment.yml
                     """
                 }
             }
