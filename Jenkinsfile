@@ -22,6 +22,13 @@ pipeline {
             } //steps
         }  //stage
 
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Build Microservices') {
             parallel {
                 stage('Config Server') {
