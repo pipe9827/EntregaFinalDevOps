@@ -101,7 +101,7 @@ pipeline {
                             'eurekaserver': 'eurekaserver',
                             'gatewayserver': 'gatewayserver',
                             'accounts': 'accounts-service',
-                            'cards': 'cards-service',
+                            'cardsss': 'cards-service',
                             'loans': 'loans-service'
                         ]
 
