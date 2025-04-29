@@ -12,12 +12,12 @@ pipeline {
         DOCKER_IMAGE_VERSION = "${BUILD_NUMBER}"
         DOCKER_PATH="/usr/local/bin"
         GCLOUD_PATH="/Users/maiki/Downloads/google-cloud-sdk/bin"
-        DOCKER_IMAGE_CONFIGSERVER = "maikid3v/configserver:${DOCKER_IMAGE_VERSION}"
-        DOCKER_IMAGE_EUREKASERVER = "maikid3v/eurekaserver:${DOCKER_IMAGE_VERSION}"
-        DOCKER_IMAGE_ACCOUNTS = "maikid3v/accounts:${DOCKER_IMAGE_VERSION}"
-        DOCKER_IMAGE_CARDS = "maikid3v/cards:${DOCKER_IMAGE_VERSION}"
-        DOCKER_IMAGE_LOANS = "maikid3v/loans:${DOCKER_IMAGE_VERSION}"
-        DOCKER_IMAGE_GATEWAYSERVER = "maikid3v/gatewayserver:${DOCKER_IMAGE_VERSION}"
+        DOCKER_IMAGE_CONFIGSERVER = "maikid3v/configserver"
+        DOCKER_IMAGE_EUREKASERVER = "maikid3v/eurekaserver"
+        DOCKER_IMAGE_ACCOUNTS = "maikid3v/accounts"
+        DOCKER_IMAGE_CARDS = "maikid3v/cards"
+        DOCKER_IMAGE_LOANS = "maikid3v/loans"
+        DOCKER_IMAGE_GATEWAYSERVER = "maikid3v/gatewayserver"
     }
     
     stages {
@@ -36,8 +36,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Construyendo imagen ${DOCKER_IMAGE_CONFIGSERVER}"
-                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_CONFIGSERVER} configserver/.
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_CONFIGSERVER}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_CONFIGSERVER}:${DOCKER_IMAGE_VERSION} configserver/.
                     """
                 }
             }
@@ -47,8 +47,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Subiendo imagen ${DOCKER_IMAGE_CONFIGSERVER}"
-                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_CONFIGSERVER}
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_CONFIGSERVER}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_CONFIGSERVER}:${DOCKER_IMAGE_VERSION}
                     """
                 }
             }
@@ -58,8 +58,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Construyendo imagen ${DOCKER_IMAGE_EUREKASERVER}"
-                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_EUREKASERVER} eurekaserver/.
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_EUREKASERVER}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_EUREKASERVER}:${DOCKER_IMAGE_VERSION} eurekaserver/.
                     """
                 }
             }
@@ -70,8 +70,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Subiendo imagen ${DOCKER_IMAGE_EUREKASERVER}"
-                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_EUREKASERVER}
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_EUREKASERVER}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_EUREKASERVER}:${DOCKER_IMAGE_VERSION}
                     """
                 }
             }
@@ -81,8 +81,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Construyendo imagen ${DOCKER_IMAGE_ACCOUNTS}"
-                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_ACCOUNTS} accounts/.
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_ACCOUNTS}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_ACCOUNTS}:${DOCKER_IMAGE_VERSION} accounts/.
                     """
                 }
             }
@@ -92,8 +92,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Subiendo imagen ${DOCKER_IMAGE_ACCOUNTS}"
-                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_ACCOUNTS}
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_ACCOUNTS}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_ACCOUNTS}:${DOCKER_IMAGE_VERSION}
                     """
                 }
             }
@@ -103,8 +103,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Construyendo imagen ${DOCKER_IMAGE_CARDS}"
-                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_CARDS} cards/.
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_CARDS}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_CARDS}:${DOCKER_IMAGE_VERSION} cards/.
                     """
                 }
             }
@@ -114,8 +114,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Subiendo imagen ${DOCKER_IMAGE_CARDS}"
-                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_CARDS}
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_CARDS}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_CARDS}:${DOCKER_IMAGE_VERSION}
                     """
                 }
             }
@@ -125,8 +125,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Construyendo imagen ${DOCKER_IMAGE_LOANS}"
-                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_LOANS} loans/.
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_LOANS}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_LOANS}:${DOCKER_IMAGE_VERSION} loans/.
                     """
                 }
             }
@@ -136,8 +136,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Subiendo imagen ${DOCKER_IMAGE_LOANS}"
-                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_LOANS}
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_LOANS}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_LOANS}:${DOCKER_IMAGE_VERSION}
                     """
                 }
             }
@@ -147,8 +147,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Construyendo imagen ${DOCKER_IMAGE_GATEWAYSERVER}"
-                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_GATEWAYSERVER} gatewayserver/.
+                    echo ">> Construyendo imagen ${DOCKER_IMAGE_GATEWAYSERVER}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker build --platform linux/amd64 -t ${DOCKER_IMAGE_GATEWAYSERVER}:${DOCKER_IMAGE_VERSION} gatewayserver/.
                     """
                 }
             }
@@ -158,8 +158,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo ">> Subiendo imagen ${DOCKER_IMAGE_GATEWAYSERVER}"
-                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_GATEWAYSERVER}
+                    echo ">> Subiendo imagen ${DOCKER_IMAGE_GATEWAYSERVER}:${DOCKER_IMAGE_VERSION}"
+                    $DOCKER_PATH/docker push ${DOCKER_IMAGE_GATEWAYSERVER}:${DOCKER_IMAGE_VERSION}
                     """
                 }
             }
@@ -170,12 +170,12 @@ pipeline {
                 script {
                     echo ">> Actualizando los manifiestos de Kubernetes"
                     sh """
-                    sed -i 's|maikid3v/${DOCKER_IMAGE_CONFIGSERVER}:[^ ]*|maikid3v/${DOCKER_IMAGE_CONFIGSERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/configserver/deployment.yml
-                    sed -i 's|maikid3v/${DOCKER_IMAGE_EUREKASERVER}:[^ ]*|maikid3v/${DOCKER_IMAGE_EUREKASERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/eurekaserver/deployment.yml
-                    sed -i 's|maikid3v/${DOCKER_IMAGE_ACCOUNTS}:[^ ]*|maikid3v/${DOCKER_IMAGE_ACCOUNTS}:${DOCKER_IMAGE_VERSION}|' kubernetes/accounts/deployment.yml
-                    sed -i 's|maikid3v/${DOCKER_IMAGE_CARDS}:[^ ]*|maikid3v/${DOCKER_IMAGE_CARDS}:${DOCKER_IMAGE_VERSION}|' kubernetes/cards/deployment.yml
-                    sed -i 's|maikid3v/${DOCKER_IMAGE_LOANS}:[^ ]*|maikid3v/${DOCKER_IMAGE_LOANS}:${DOCKER_IMAGE_VERSION}|' kubernetes/loans/deployment.yml
-                    sed -i 's|maikid3v/${DOCKER_IMAGE_GATEWAYSERVER}:[^ ]*|maikid3v/${DOCKER_IMAGE_GATEWAYSERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/gatewayserver/deployment.yml
+                    sed -i 's|${DOCKER_IMAGE_CONFIGSERVER}:[^ ]*|${DOCKER_IMAGE_CONFIGSERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/configserver/deployment.yml
+                    sed -i 's|${DOCKER_IMAGE_EUREKASERVER}:[^ ]*|${DOCKER_IMAGE_EUREKASERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/eurekaserver/deployment.yml
+                    sed -i 's|${DOCKER_IMAGE_ACCOUNTS}:[^ ]*|${DOCKER_IMAGE_ACCOUNTS}:${DOCKER_IMAGE_VERSION}|' kubernetes/accounts/deployment.yml
+                    sed -i 's|${DOCKER_IMAGE_CARDS}:[^ ]*|${DOCKER_IMAGE_CARDS}:${DOCKER_IMAGE_VERSION}|' kubernetes/cards/deployment.yml
+                    sed -i 's|${DOCKER_IMAGE_LOANS}:[^ ]*|${DOCKER_IMAGE_LOANS}:${DOCKER_IMAGE_VERSION}|' kubernetes/loans/deployment.yml
+                    sed -i 's|${DOCKER_IMAGE_GATEWAYSERVER}:[^ ]*|${DOCKER_IMAGE_GATEWAYSERVER}:${DOCKER_IMAGE_VERSION}|' kubernetes/gatewayserver/deployment.yml
                     """
                 }
             }
