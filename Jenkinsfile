@@ -27,7 +27,6 @@ pipeline {
                     sh '''
                     $GCLOUD_PATH/gcloud pubsub topics list
                     $GCLOUD_PATH/gcloud projects list
-                    $GCLOUD_PATH/gcloud compute networks list
                     '''
                 }
             } //steps
