@@ -76,7 +76,7 @@ pipeline {
                     parallel services.collectEntries { dirName, dockerName ->
                         ["${dirName}" : {
                             dir(dirName) {
-                                sh "ls -la"
+                                sh "pwd"
                                 def imageName = "maikid3v/${dockerName}:${DOCKER_IMAGE_VERSION}"
                                 def exists = sh(
                                     script: "curl --silent -f -lSL https://hub.docker.com/repositories/maikid3v/${dockerName}/tags/${DOCKER_IMAGE_VERSION}/ > /dev/null && echo true || echo false",
