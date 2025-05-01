@@ -199,7 +199,6 @@ pipeline {
                     gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
                     gcloud config set project $GOOGLE_PROJECT_ID
                     gcloud container clusters get-credentials $CLUSTER_NAME --zone $LOCATION
-                    gcloud container clusters update $CLUSTER_NAME --enable-autoscaling --min-nodes=1 --max-nodes=5
 
                     kubectl apply -f kubernetes/configmap.yml
 
