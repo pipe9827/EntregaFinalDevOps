@@ -7,7 +7,7 @@ pipeline {
         GOOGLE_CLOUD_KEYFILE_JSON = credentials('service-account-total-contro')
         GOOGLE_PROJECT_ID = "lab3-kubernetes-devops" 
         GOOGLE_PROJECT_NAME = "lab3-kubernetes-devops"
-        LOCATION = 'us-central1'
+        LOCATION = 'us-central1-f'
         CLUSTER_NAME = 'devops-toolkit-pulumi'
         DOCKER_IMAGE_VERSION = "${BUILD_NUMBER}"
         DOCKER_PATH="/usr/local/bin"
