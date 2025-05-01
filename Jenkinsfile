@@ -3,8 +3,8 @@ pipeline {
     options {disableConcurrentBuilds()}
     environment {
         DOCKERHUB_CREDENTIALS = credentials('maikid3v-dokerhub')
-        GOOGLE_APPLICATION_CREDENTIALS = credentials('service-account-visitor')
-        GOOGLE_CLOUD_KEYFILE_JSON = credentials('service-account-visitor')
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('service-account-total-control')
+        GOOGLE_CLOUD_KEYFILE_JSON = credentials('service-account-total-control')
         GOOGLE_PROJECT_ID = "lab3-kubernetes-devops" 
         GOOGLE_PROJECT_NAME = "lab3-kubernetes-devops"
         LOCATION = 'us-central1'
