@@ -8,7 +8,7 @@ pipeline {
         GOOGLE_PROJECT_ID = "lab3-kubernetes-devops" 
         GOOGLE_PROJECT_NAME = "lab3-kubernetes-devops"
         LOCATION = 'us-central1'
-        CLUSTER_NAME = 'autopilot-cluster-1'
+        CLUSTER_NAME = 'devops-toolkit-pulumi'
         DOCKER_IMAGE_VERSION = "${BUILD_NUMBER}"
         DOCKER_PATH="/usr/local/bin"
         GCLOUD_PATH="/Users/maiki/Downloads/google-cloud-sdk/bin"
@@ -199,6 +199,7 @@ pipeline {
                     gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
                     gcloud config set project $GOOGLE_PROJECT_ID
                     gcloud container clusters get-credentials $CLUSTER_NAME --zone $LOCATION
+                    gcloud container clusters update $CLUSTER_NAME --enable-autoscaling --min-nodes=1 --max-nodes=5
 
                     kubectl apply -f kubernetes/configmap.yml
 
