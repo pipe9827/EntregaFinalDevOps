@@ -202,23 +202,23 @@ pipeline {
 
                     kubectl apply -f kubernetes/configmap.yml
 
-                    kubectl apply -f configserver/deployment.yml
-                    kubectl apply -f configserver/service.yml
+                    kubectl apply -f kubernetes/configserver/deployment.yml
+                    kubectl apply -f kubernetes/configserver/service.yml
 
-                    kubectl apply -f eurekaserver/deployment.yml
-                    kubectl apply -f eurekaserver/service.yml
+                    kubectl apply -f kubernetes/eurekaserver/deployment.yml
+                    kubectl apply -f kubernetes/eurekaserver/service.yml
 
-                    kubectl apply -f gatewayserver/deployment.yml
-                    kubectl apply -f gatewayserver/service.yml
+                    kubectl apply -f kubernetes/gatewayserver/deployment.yml
+                    kubectl apply -f kubernetes/gatewayserver/service.yml
 
-                    kubectl apply -f accounts/deployment.yml
-                    kubectl apply -f accounts/service.yml
+                    kubectl apply -f kubernetes/accounts/deployment.yml
+                    kubectl apply -f kubernetes/accounts/service.yml
 
-                    kubectl apply -f loans/deployment.yml
-                    kubectl apply -f loans/service.yml
+                    kubectl apply -f kubernetes/loans/deployment.yml
+                    kubectl apply -f kubernetes/loans/service.yml
 
-                    kubectl apply -f cards/deployment.yml
-                    kubectl apply -f cards/service.yml
+                    kubectl apply -f kubernetes/cards/deployment.yml
+                    kubectl apply -f kubernetes/cards/service.yml
                     '''
                 }
             }
