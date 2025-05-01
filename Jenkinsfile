@@ -197,7 +197,7 @@ pipeline {
                 script {
                     sh '''
                     gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
-                    gcloud config set project $PROJECT_ID
+                    gcloud config set project $GOOGLE_PROJECT_ID
                     gcloud container clusters get-credentials $CLUSTER_NAME --zone $LOCATION
 
                     kubectl apply -f kubernetes/configmap.yml
